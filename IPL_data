@@ -1,0 +1,46 @@
+
+
+@author: ShubhangPK
+"""
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style("darkgrid")
+plt.rcParams['figure.figsize'] = (10, 4)
+
+match = pd.read_csv('YOUR_DATA_SET.csv')
+print('Team which has won by highest margin(runs): ',match.iloc[match['win_by_runs'].idxmax()]['winner'])
+print('Team which has won by highest margin(wickets): ',match.iloc[match['win_by_wickets'].idxmax()]['winner'])
+
+sns.countplot(x='season', data=match)
+plt.show()
+
+data = match.winner.value_counts()
+sns.barplot(y = data.index, x = data, orient='h')
+
+top_players = match.player_of_match.value_counts()[:10]
+fig, ax = plt.subplots()
+ax.set_ylim([0,20])
+
+ax.set_title("Most man of the match")
+
+sns.barplot(x = top_players.index, y = top_players, orient='v'); #palette="Blues");
+plt.show()
+
+ss = match['toss_winner'] == match['winner']
+sns.countplot(x="toss_winner", hue="toss_decision", data= match)
+
+print(match.describe())
+
+x, y = 2008, 2018
+while x < y:
+    wins_percity = match[match['season'] == x].groupby(['player_of_match', 'city'])['id'].count().unstack()
+    plot = wins_percity.plot(kind='bar', stacked=True, title="Best player in different cities\nSeason "+str(x), figsize=(7, 5))
+    sns.set_palette("Paired", len(match['city'].unique()))
+    plot.set_xlabel("Teams")
+    plot.set_ylabel("No of wins")
+    plot.legend(loc='best', prop={'size':8})
+    x+=1
